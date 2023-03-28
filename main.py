@@ -4,12 +4,38 @@ import re
 def get_ip():
     my_ip = str(input('Put Your Ip: '))
     subnet_mask = str(input('Put Your Subnet Mask: '))
-    regex_ip = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
+    regex_ip = r'([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0]))?$'
     if re.search(regex_ip, my_ip) and re.search(regex_ip, subnet_mask):
-        binary_ip(my_ip, subnet_mask)
+        if re.search(r'01', check_subnet(subnet_mask)):
+            print('Subnet Not Found!!!')
+        else:
+            get_cidr(my_ip, subnet_mask)
     else:
         print('Ip Not Found!!!')
     return 0
+
+
+def get_cidr(ip, subnet):
+    cidr = ip.split('/')[1]
+    computing_cidr(cidr)
+    binary_ip(ip.split('/')[0], subnet)
+    return 0
+
+
+def computing_cidr(cidr):
+    space = 32 - int(cidr)
+    node = 2 ** space
+    print('Node = ', node)
+    return 0
+
+
+def check_subnet(subnet):
+    subnet_mask_binary = ''
+    subnet_list = list(map(int, subnet.split('.')))
+    for i in subnet_list:
+        subnet_mask_binary += str(bin(i)[2:].zfill(8))
+    print(subnet_mask_binary)
+    return subnet_mask_binary
 
 
 def binary_ip(ip, subnet):
